@@ -10,10 +10,7 @@ export function LocationSection() {
       id="localizacao"
     >
       <div className="mx-auto w-[min(1180px,calc(100%-48px))] grid grid-cols-[0.75fr_1.25fr] items-center gap-[clamp(50px,8vw,110px)] max-[900px]:grid-cols-1 max-[900px]:gap-[60px] max-[600px]:w-[min(calc(100%-32px),1180px)]">
-        <div
-          className="location-copy text-left max-[900px]:text-center"
-          data-reveal
-        >
+        <div className="location-copy text-left max-[900px]:text-center" data-reveal>
           <p className="mb-[18px] text-[0.72rem] font-semibold uppercase tracking-[0.2em] text-[var(--caramel)]">
             Onde a festa acontece
           </p>
@@ -32,8 +29,8 @@ export function LocationSection() {
             </div>
           </div>
           <p className="my-7 max-w-[450px] leading-[1.75] text-[rgb(52_64_48_/_68%)] max-[900px]:mx-auto">
-            Esperamos você a partir das <strong>17 horas</strong> para celebrar
-            esse dia tão especial com a gente.
+            Esperamos você a partir das <strong>17 horas</strong> para celebrar esse dia
+            tão especial com a gente.
           </p>
           <a
             className="inline-flex w-fit items-center justify-center gap-2 rounded-full border border-[var(--sage)] bg-[var(--sage)] px-6 py-0 min-h-[54px] text-[0.76rem] font-semibold tracking-[0.06em] text-[var(--white)] no-underline shadow-[0_12px_26px_rgb(79_92_71_/_18%)] transition-[transform,background,box-shadow] duration-300 hover:-translate-y-0.5 hover:bg-[var(--sage-dark)] max-[900px]:mx-auto"

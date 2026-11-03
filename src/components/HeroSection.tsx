@@ -63,6 +63,7 @@ export function HeroSection({ onDiscover }: HeroSectionProps) {
 
       <div
         className="hero-date absolute right-[4vw] bottom-9 z-[4] flex items-center gap-3 text-[0.7rem] font-semibold tracking-[0.14em] text-[var(--sage-dark)] max-[900px]:right-6 max-[900px]:bottom-[22px] max-[600px]:right-4 max-[600px]:left-4 max-[600px]:justify-center"
+        role="img"
         aria-label="Data: 29 de novembro de 2026"
       >
         <span>29</span>

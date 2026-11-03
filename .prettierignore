@@ -1,0 +1,12 @@
+node_modules
+.agents
+.git
+.next
+dist
+build
+coverage
+public/assets
+src/components/ui
+pnpm-lock.yaml
+*.lock
+next-env.d.ts

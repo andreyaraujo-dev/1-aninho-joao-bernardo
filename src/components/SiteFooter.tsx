@@ -8,6 +8,9 @@ export function SiteFooter() {
       <span className="text-[0.65rem] font-semibold tracking-[0.28em]">
         29 · 11 · 26
       </span>
+      <p className="mt-8 text-xs text-[var(--sage-soft)]/70">
+        Desenvolvido por Andrey Araújo
+      </p>
     </footer>
   )
 }

@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum GuestStatus {
+  AGUARDANDO
+  CONFIRMADO
+  NAO_CONFIRMADO
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  nome      String
+  login     String   @unique
+  senha     String
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Guest {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  nome        String
+  celular     String
+  status      GuestStatus @default(AGUARDANDO)
+  createdAt   DateTime    @default(now())
+  confirmacao DateTime?
+  link        GuestLink?
+}
+
+model GuestLink {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  guestId   String   @unique @db.ObjectId
+  token     String   @unique
+  createdAt DateTime @default(now())
+  guest     Guest    @relation(fields: [guestId], references: [id])
+}
+
+model Event {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  dataEvento DateTime
+  mensagem   String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

@@ -2,8 +2,9 @@ node_modules/
 dist/
 build/
 .cache/
-.env*
+.env
 .vite/
+.next/
 vite.config.*.timestamp-*
 *.tsbuildinfo
 *-debug.log*
@@ -13,3 +14,4 @@ logs/
 .tmp-*
 /.plugins/
 /.opencode-skills/
+/generated/

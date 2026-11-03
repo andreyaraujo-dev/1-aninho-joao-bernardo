@@ -16,11 +16,11 @@ export function GiftsSection() {
             Para quem quiser presentear
           </p>
           <h2 className="m-0 font-['Playfair_Display'] text-[clamp(2.8rem,5vw,4.5rem)] font-medium leading-[1.02] tracking-[-0.04em]">
-            Algumas ideias para o João
+            Algumas ideias para o João Bernardo
           </h2>
           <p className="mt-[26px] max-w-[480px] leading-[1.75] text-[rgb(255_254_250_/_68%)] max-[900px]:mx-auto">
-            Sua presença já é o nosso maior presente. Mas, se quiser trazer um
-            mimo, separamos algumas sugestões.
+            Sua presença já é o nosso maior presente. Mas, se quiser trazer um mimo,
+            separamos algumas sugestões.
           </p>
           <img
             className="mt-7 mb-[-60px] ml-auto w-[150px] rotate-[5deg] drop-shadow-[0_18px_18px_rgb(44_54_41_/_24%)]"

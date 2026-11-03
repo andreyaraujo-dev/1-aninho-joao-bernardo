@@ -36,12 +36,12 @@ export function InvitationSection() {
             Forte como um urso
           </p>
           <h2 className="m-0 max-w-[680px] font-['Playfair_Display'] text-[clamp(2.5rem,5vw,4.8rem)] font-medium leading-[1.02] tracking-[-0.04em]">
-            Nosso pequeno grande aventureiro vai fazer 1!
+            Nosso pequeno grande aventureiro vai fazer 1 ano!
           </h2>
           <p className="my-[34px] max-w-[590px] text-[1.04rem] leading-[1.8] text-[rgb(52_64_48_/_70%)] max-[900px]:mx-auto max-[600px]:my-[26px] max-[600px]:text-[0.95rem]">
-            Com o coração cheio de alegria, convidamos você para celebrar o
-            primeiro ano do João Bernardo — uma tarde feita de carinho,
-            brincadeiras e memórias para guardar para sempre.
+            Com o coração cheio de alegria, convidamos você para celebrar o primeiro ano
+            do João Bernardo — uma tarde feita de carinho, brincadeiras e memórias para
+            guardar para sempre.
           </p>
           <div className="mx-0 flex w-fit items-center gap-[18px] rounded-2xl border border-[rgb(116_128_104_/_17%)] bg-[var(--white)] px-[22px] py-[17px] text-left shadow-[0_16px_45px_rgb(79_92_71_/_7%)] max-[900px]:mx-auto">
             <CalendarIcon className="w-7 fill-none stroke-[var(--caramel)] [stroke-linecap:round] [stroke-linejoin:round] [stroke-width:1.5]" />

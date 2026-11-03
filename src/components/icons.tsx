@@ -35,11 +35,7 @@ export function LocationIcon({ className = "" }: { className?: string }) {
   )
 }
 
-export function GiftIcon({
-  type,
-}: {
-  type: "shirt" | "moon" | "shoe" | "blocks"
-}) {
+export function GiftIcon({ type }: { type: "shirt" | "moon" | "shoe" | "blocks" }) {
   if (type === "shirt") {
     return (
       <svg
