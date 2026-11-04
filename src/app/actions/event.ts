@@ -11,7 +11,7 @@ export async function updateEventAction(formData: FormData) {
   const event = await getEvent()
   const parsed = eventSchema.safeParse(formDataToObject(formData))
   if (!parsed.success) return { error: firstValidationError(parsed.error) }
-  const dataEvento = new Date(`${parsed.data.dataEvento}T23:59:59-03:00`)
+  const dataEvento = new Date(`${parsed.data.dataEvento}T23:59:59.999Z`)
 
   await prisma.event.update({
     where: { id: event.id },

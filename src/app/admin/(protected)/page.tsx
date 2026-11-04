@@ -27,7 +27,10 @@ export default async function AdminPage() {
         <h1 className="text-3xl font-semibold tracking-tight">Visão geral</h1>
         <p className="mt-2 text-muted-foreground">
           Acompanhe as respostas do convite do dia{" "}
-          {event.dataEvento.toLocaleDateString("pt-BR")}.
+          {event.dataEvento.toLocaleDateString("pt-BR", {
+            timeZone: "America/Sao_Paulo",
+          })}
+          .
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -15,7 +15,7 @@ async function main() {
   })
 
   const eventData = {
-    dataEvento: new Date(process.env.EVENT_DATE ?? "2026-11-29T23:59:59-03:00"),
+    dataEvento: new Date(process.env.EVENT_DATE ?? "2026-11-29T23:59:59.999Z"),
     mensagem:
       process.env.EVENT_MESSAGE ??
       "Será uma alegria ter você conosco na comemoração do João Bernardo!",
