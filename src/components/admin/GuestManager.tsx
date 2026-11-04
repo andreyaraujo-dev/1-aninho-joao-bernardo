@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react"
 import {
   createGuestAction,
   deleteGuestAction,
+  markGuestInviteSentAction,
   updateGuestAction,
 } from "@/app/actions/guests"
 import { Badge } from "@/components/ui/badge"
@@ -32,6 +33,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { CopyInviteButton } from "@/components/admin/CopyInviteButton"
+import { WhatsAppInviteButton } from "@/components/admin/WhatsAppInviteButton"
 import { formatBrazilianMobile } from "@/lib/validation"
 
 type Guest = {
@@ -39,6 +41,7 @@ type Guest = {
   nome: string
   celular: string
   status: string
+  conviteStatus: string
   link: { token: string } | null
 }
 
@@ -109,6 +112,7 @@ export function GuestManager({
           </p>
         </div>
         <Button
+          className="h-10"
           onClick={() => {
             setCreateName("")
             setCreatePhone("")
@@ -134,14 +138,16 @@ export function GuestManager({
                 <TableRow className="border-b-gray-300">
                   <TableHead>Nome</TableHead>
                   <TableHead>Celular</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Convite</TableHead>
+                  <TableHead>Status do convidado</TableHead>
+                  <TableHead>Status do convite</TableHead>
+                  <TableHead>Ações do convite</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {guests.map((guest) => {
                   const url = `${baseUrl}/?guest=${guest.link?.token ?? ""}`
+                  const inviteMessage = `${message}\n\n${url}`
                   return (
                     <TableRow
                       key={guest.id}
@@ -158,13 +164,40 @@ export function GuestManager({
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <CopyInviteButton message={`${message}\n\n${url}`} />
+                        <Badge
+                          variant="outline"
+                          className={
+                            guest.conviteStatus === "ENVIADO"
+                              ? "border-green-200 bg-green-100 text-green-800"
+                              : "border-slate-200 bg-slate-100 text-slate-700"
+                          }
+                        >
+                          {guest.conviteStatus === "ENVIADO"
+                            ? "Enviado"
+                            : "Não enviado"}
+                        </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex justify-end gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <CopyInviteButton message={inviteMessage} />
+                          <WhatsAppInviteButton
+                            phone={guest.celular}
+                            message={inviteMessage}
+                            sent={guest.conviteStatus === "ENVIADO"}
+                            markSent={async () => {
+                              const formData = new FormData()
+                              formData.set("id", guest.id)
+                              return markGuestInviteSentAction(formData)
+                            }}
+                          />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-end gap-2">
                           <Button
                             variant="outline"
                             size="sm"
+                            className="h-10"
                             onClick={() => {
                               setEditing(guest)
                               setEditName(guest.nome)
@@ -177,6 +210,7 @@ export function GuestManager({
                           <Button
                             variant="destructive"
                             size="sm"
+                            className="h-10"
                             onClick={() => setDeleting(guest)}
                             disabled={pending}
                           >
@@ -203,7 +237,7 @@ export function GuestManager({
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="[&_[data-slot=input]]:h-10 [&_[data-slot=button]]:h-10 [&_[data-slot=button]]:min-h-10">
           <DialogHeader>
             <DialogTitle>Novo convidado</DialogTitle>
             <DialogDescription>
@@ -226,6 +260,7 @@ export function GuestManager({
                 <Input
                   id="create-nome"
                   name="nome"
+                  className="h-10"
                   value={createName}
                   onChange={(event) => setCreateName(event.target.value)}
                   required
@@ -236,6 +271,7 @@ export function GuestManager({
                 <Input
                   id="create-celular"
                   name="celular"
+                  className="h-10"
                   type="tel"
                   inputMode="numeric"
                   autoComplete="tel"
@@ -249,11 +285,17 @@ export function GuestManager({
             </FieldGroup>
             <DialogFooter className="border-t-0 bg-transparent">
               <DialogClose
-                render={<Button variant="outline" onClick={() => setCreatePhone("")} />}
+                render={
+                  <Button
+                    variant="outline"
+                    className="h-10"
+                    onClick={() => setCreatePhone("")}
+                  />
+                }
               >
                 Cancelar
               </DialogClose>
-              <Button type="submit" disabled={pending}>
+              <Button type="submit" className="h-10" disabled={pending}>
                 {pending ? (
                   <Loader2 className="animate-spin" data-icon="inline-start" />
                 ) : null}
@@ -274,7 +316,7 @@ export function GuestManager({
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="[&_[data-slot=input]]:h-10 [&_[data-slot=button]]:h-10 [&_[data-slot=button]]:min-h-10">
           <DialogHeader>
             <DialogTitle>Editar convidado</DialogTitle>
             <DialogDescription>Atualize os dados deste convidado.</DialogDescription>
@@ -297,6 +339,7 @@ export function GuestManager({
                   <Input
                     id="edit-nome"
                     name="nome"
+                    className="h-10"
                     value={editName}
                     onChange={(event) => setEditName(event.target.value)}
                     required
@@ -307,6 +350,7 @@ export function GuestManager({
                   <Input
                     id="edit-celular"
                     name="celular"
+                    className="h-10"
                     type="tel"
                     inputMode="numeric"
                     autoComplete="tel"
@@ -319,10 +363,10 @@ export function GuestManager({
                 </Field>
               </FieldGroup>
               <DialogFooter className="border-t-0 bg-transparent">
-                <DialogClose render={<Button variant="outline" />}>
+                <DialogClose render={<Button variant="outline" className="h-10" />}>
                   Cancelar
                 </DialogClose>
-                <Button type="submit" disabled={pending}>
+                <Button type="submit" className="h-10" disabled={pending}>
                   {pending ? (
                     <Loader2 className="animate-spin" data-icon="inline-start" />
                   ) : null}
@@ -335,7 +379,7 @@ export function GuestManager({
       </Dialog>
 
       <Dialog open={!!deleting} onOpenChange={(open) => !open && setDeleting(null)}>
-        <DialogContent>
+        <DialogContent className="[&_[data-slot=input]]:h-10 [&_[data-slot=button]]:h-10 [&_[data-slot=button]]:min-h-10">
           <DialogHeader>
             <DialogTitle>Excluir convidado?</DialogTitle>
             <DialogDescription>
@@ -349,8 +393,15 @@ export function GuestManager({
           >
             <input type="hidden" name="id" value={deleting?.id ?? ""} />
             <DialogFooter className="border-t-0 bg-transparent">
-              <DialogClose render={<Button variant="outline" />}>Cancelar</DialogClose>
-              <Button type="submit" variant="destructive" disabled={pending}>
+              <DialogClose render={<Button variant="outline" className="h-10" />}>
+                Cancelar
+              </DialogClose>
+              <Button
+                type="submit"
+                variant="destructive"
+                className="h-10"
+                disabled={pending}
+              >
                 {pending ? (
                   <Loader2 className="animate-spin" data-icon="inline-start" />
                 ) : null}

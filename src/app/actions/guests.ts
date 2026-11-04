@@ -49,6 +49,28 @@ export async function deleteGuestAction(formData: FormData) {
   return { success: "Convidado excluído com sucesso." }
 }
 
+export async function markGuestInviteSentAction(formData: FormData) {
+  await requireUser()
+  const parsed = guestIdSchema.safeParse(formDataToObject(formData))
+  if (!parsed.success) return { error: firstValidationError(parsed.error) }
+
+  const guest = await prisma.guest.findUnique({
+    where: { id: parsed.data.id },
+    select: { celular: true },
+  })
+  if (!guest) return { error: "Convidado não encontrado." }
+  if (!guest.celular) {
+    return { error: "Cadastre um celular antes de enviar o convite." }
+  }
+
+  await prisma.guest.update({
+    where: { id: parsed.data.id },
+    data: { conviteStatus: "ENVIADO" },
+  })
+  revalidatePath("/admin/convidados")
+  return { success: "Convite marcado como enviado." }
+}
+
 export async function getGuestByToken(token: string) {
   const parsed = guestResponseSchema.shape.token.safeParse(token)
   if (!parsed.success) return null

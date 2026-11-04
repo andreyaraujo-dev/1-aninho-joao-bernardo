@@ -16,11 +16,12 @@ export default async function GuestsPage() {
 
   return (
     <GuestManager
-      guests={guests.map(({ id, nome, celular, status, link }) => ({
+      guests={guests.map(({ id, nome, celular, status, conviteStatus, link }) => ({
         id,
         nome,
         celular,
         status,
+        conviteStatus,
         link,
       }))}
       message={event.mensagem}

@@ -26,7 +26,7 @@ export default function LoginPage() {
   )
 
   return (
-    <main className="grid min-h-screen place-items-center bg-muted/30 p-4">
+    <main className="grid min-h-screen place-items-center bg-muted/30 p-4 [&_[data-slot=input]]:h-10 [&_[data-slot=button]]:h-10 [&_[data-slot=button]]:min-h-10">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Área do evento</CardTitle>
@@ -40,6 +40,7 @@ export default function LoginPage() {
                 <Input
                   id="login"
                   name="login"
+                  className="h-10"
                   required
                   autoComplete="username"
                   value={login}
@@ -52,6 +53,7 @@ export default function LoginPage() {
                   id="senha"
                   name="senha"
                   type="password"
+                  className="h-10"
                   required
                   autoComplete="current-password"
                   value={senha}
@@ -64,7 +66,7 @@ export default function LoginPage() {
                 <AlertDescription>{state.error}</AlertDescription>
               </Alert>
             ) : null}
-            <Button type="submit" disabled={pending}>
+            <Button type="submit" disabled={pending} className="h-10">
               {pending ? (
                 <Loader2 className="animate-spin" data-icon="inline-start" />
               ) : null}

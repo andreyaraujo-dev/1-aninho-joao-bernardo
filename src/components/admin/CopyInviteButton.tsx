@@ -24,7 +24,14 @@ export function CopyInviteButton({ message }: { message: string }) {
   }
 
   return (
-    <Button type="button" variant="outline" size="sm" onClick={copy} disabled={pending}>
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      className="h-10"
+      onClick={copy}
+      disabled={pending}
+    >
       {pending ? (
         <Loader2 className="animate-spin" data-icon="inline-start" />
       ) : copied ? (

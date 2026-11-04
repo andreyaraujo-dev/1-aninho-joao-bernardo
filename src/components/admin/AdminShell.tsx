@@ -53,8 +53,9 @@ function LogoutButton({ className }: { className?: string }) {
   return (
     <form action={logoutAction} className={className}>
       <Button
+        type="submit"
         variant="ghost"
-        className="w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-foreground/10 hover:text-sidebar-foreground"
+        className="h-10 w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-foreground/10 hover:text-sidebar-foreground"
         disabled={pending}
       >
         {pending ? (
@@ -78,7 +79,7 @@ export function AdminShell({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-background text-foreground bg-[radial-gradient(circle_at_100%_0%,rgb(75_155_119_/_18%),transparent_34rem),radial-gradient(circle_at_0%_100%,rgb(218_174_127_/_13%),transparent_28rem)]">
+    <div className="min-h-screen bg-background text-foreground [&_[data-slot=input]]:h-10 [&_[data-slot=button]]:h-10 [&_[data-slot=button]]:min-h-10 bg-[radial-gradient(circle_at_100%_0%,rgb(75_155_119_/_18%),transparent_34rem),radial-gradient(circle_at_0%_100%,rgb(218_174_127_/_13%),transparent_28rem)]">
       <aside className="fixed inset-y-0 hidden w-64 border-r border-white/10 bg-sidebar p-6 text-sidebar-foreground md:flex md:flex-col md:gap-8">
         <div>
           <p className="font-serif text-xl font-semibold">João Bernardo</p>
@@ -95,7 +96,12 @@ export function AdminShell({
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger
               render={
-                <Button variant="ghost" size="icon" aria-label="Abrir menu">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-10"
+                  aria-label="Abrir menu"
+                >
                   <Menu />
                 </Button>
               }
