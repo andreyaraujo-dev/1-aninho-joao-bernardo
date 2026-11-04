@@ -1,7 +1,7 @@
 import { GiftIcon } from "./icons"
 
 const gifts = [
-  ["shirt", "Vestuário", "Roupa tamanho 1 ano", "01"],
+  ["shirt", "Vestuário", "Roupa tamanho de 1 a 2 anos", "01"],
   ["moon", "Hora de dormir", "Pijama 18 a 24 meses", "02"],
   ["shoe", "Primeiros passos", "Sapato tamanho 20–21", "03"],
   ["blocks", "Aprender brincando", "Brinquedos educativos", "04"],
