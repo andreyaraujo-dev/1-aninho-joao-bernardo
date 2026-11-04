@@ -1,7 +1,7 @@
 generator client {
-  provider      = "prisma-client"
-  output        = "../generated/prisma"
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  provider   = "prisma-client"
+  output     = "../generated/prisma"
+  engineType = "client"
 }
 
 datasource db {
@@ -30,14 +30,14 @@ model User {
 }
 
 model Guest {
-  id          String      @id @default(auto()) @map("_id") @db.ObjectId
-  nome        String
-  celular     String
-  status      GuestStatus @default(AGUARDANDO)
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  nome          String
+  celular       String
+  status        GuestStatus  @default(AGUARDANDO)
   conviteStatus InviteStatus @default(NAO_ENVIADO)
-  createdAt   DateTime    @default(now())
-  confirmacao DateTime?
-  link        GuestLink?
+  createdAt     DateTime     @default(now())
+  confirmacao   DateTime?
+  link          GuestLink?
 }
 
 model GuestLink {
