@@ -8,11 +8,14 @@ import { Toaster } from "@/components/ui/sonner"
 export const metadata: Metadata = {
   title: "João Bernardo — 1 aninho",
   description: "Convite do aniversário de 1 ano do João Bernardo.",
+  icons: {
+    icon: "/assets/invite/monogram.png",
+  },
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
       <body>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <TooltipProvider>
