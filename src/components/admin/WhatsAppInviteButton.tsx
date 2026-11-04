@@ -24,7 +24,12 @@ export function WhatsAppInviteButton({
   async function send() {
     if (!hasPhone || pending) return
 
-    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+    const phoneDigits = phone.replace(/\D/g, "")
+    const internationalPhone =
+      phoneDigits.length === 13 && phoneDigits.startsWith("55")
+        ? phoneDigits
+        : `55${phoneDigits}`
+    const whatsappUrl = `https://wa.me/${internationalPhone}?text=${encodeURIComponent(message)}`
     const whatsappWindow = window.open(whatsappUrl, "_blank", "noopener,noreferrer")
     if (!whatsappWindow) {
       toast.error(
