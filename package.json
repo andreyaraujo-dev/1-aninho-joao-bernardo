@@ -42,12 +42,10 @@
   "devDependencies": {
     "@biomejs/biome": "^2.6.4",
     "@tailwindcss/postcss": "^4.3.4",
-    "@tailwindcss/vite": "^4.0.0",
     "@types/bcryptjs": "^3.0.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react": "^6.0.0",
     "dotenv": "^18.0.9",
     "lefthook": "^2.2.2",
     "oxfmt": "^0.2.0",
@@ -55,7 +53,6 @@
     "prisma": "6.19.0",
     "tailwindcss": "^4.0.0",
     "tsx": "^4.23.15",
-    "typescript": "^5.7.0",
-    "vite": "^8.0.5"
+    "typescript": "^5.7.0"
   }
 }

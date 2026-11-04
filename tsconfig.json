@@ -30,7 +30,6 @@
     "src",
     "prisma/**/*.ts",
     "prisma.config.ts",
-    "vite.config.ts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
