@@ -1,73 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useFormStatus } from "react-dom"
-import {
-  CalendarDays,
-  LayoutDashboard,
-  Loader2,
-  LogOut,
-  Menu,
-  Users,
-} from "lucide-react"
-import { logoutAction } from "@/app/actions/auth"
+import { Menu } from "lucide-react"
+import { AdminLogoutButton } from "@/components/admin/AdminLogoutButton"
+import { AdminNavigation } from "@/components/admin/AdminNavigation"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { cn } from "cn"
-
-const links = [
-  { href: "/admin", label: "Visão geral", icon: LayoutDashboard },
-  { href: "/admin/convidados", label: "Convidados", icon: Users },
-  { href: "/admin/evento", label: "Evento", icon: CalendarDays },
-]
-
-function Navigation({ onNavigate }: { onNavigate?: () => void }) {
-  const pathname = usePathname()
-  return (
-    <nav className="flex flex-col gap-1">
-      {links.map(({ href, label, icon: Icon }) => (
-        <Link
-          key={href}
-          href={href}
-          className={cn(
-            "flex items-center gap-3 rounded-lg px-3 py-3 text-sm text-sidebar-foreground transition-colors",
-            pathname === href
-              ? "bg-primary font-medium"
-              : "hover:bg-sidebar-foreground/10",
-          )}
-          onClick={onNavigate}
-        >
-          <Icon className="size-4" />
-          {label}
-        </Link>
-      ))}
-    </nav>
-  )
-}
-
-function LogoutButton({ className }: { className?: string }) {
-  const { pending } = useFormStatus()
-
-  return (
-    <form action={logoutAction} className={className}>
-      <Button
-        type="submit"
-        variant="ghost"
-        className="h-10 w-full justify-start gap-3 text-sidebar-foreground hover:bg-sidebar-foreground/10 hover:text-sidebar-foreground"
-        disabled={pending}
-      >
-        {pending ? (
-          <Loader2 className="animate-spin" data-icon="inline-start" />
-        ) : (
-          <LogOut data-icon="inline-start" />
-        )}
-        {pending ? "Saindo..." : "Sair"}
-      </Button>
-    </form>
-  )
-}
 
 export function AdminShell({
   children,
@@ -85,10 +23,10 @@ export function AdminShell({
           <p className="font-serif text-xl font-semibold">João Bernardo</p>
           <p className="text-sm text-sidebar-foreground/65">Área do evento</p>
         </div>
-        <Navigation />
+        <AdminNavigation />
         <div className="mt-auto">
           <p className="mb-2 px-3 text-xs text-sidebar-foreground/65">{userName}</p>
-          <LogoutButton />
+          <AdminLogoutButton />
         </div>
       </aside>
       <div className="md:pl-64">
@@ -120,13 +58,13 @@ export function AdminShell({
                   </p>
                 </div>
                 <div className="flex-1 px-4 py-6">
-                  <Navigation onNavigate={() => setMobileMenuOpen(false)} />
+                  <AdminNavigation onNavigate={() => setMobileMenuOpen(false)} />
                 </div>
                 <div className="border-t border-sidebar-foreground/10 px-4 py-4">
                   <p className="mb-2 px-3 text-xs text-sidebar-foreground/65">
                     {userName}
                   </p>
-                  <LogoutButton />
+                  <AdminLogoutButton />
                 </div>
               </div>
             </SheetContent>

@@ -3,27 +3,10 @@
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { toast } from "sonner"
-import { Loader2 } from "lucide-react"
-import {
-  createGuestAction,
-  deleteGuestAction,
-  markGuestInviteSentAction,
-  updateGuestAction,
-} from "@/app/actions/guests"
+import { markGuestInviteSentAction } from "@/app/actions/guests"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
 import {
   Table,
   TableBody,
@@ -33,17 +16,12 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { CopyInviteButton } from "@/components/admin/CopyInviteButton"
+import { CreateGuestDialog } from "@/components/admin/CreateGuestDialog"
+import { DeleteGuestDialog } from "@/components/admin/DeleteGuestDialog"
+import { EditGuestDialog } from "@/components/admin/EditGuestDialog"
 import { WhatsAppInviteButton } from "@/components/admin/WhatsAppInviteButton"
+import type { Guest, GuestAction } from "@/components/admin/GuestTypes"
 import { formatBrazilianMobile } from "@/lib/validation"
-
-type Guest = {
-  id: string
-  nome: string
-  celular: string
-  status: string
-  conviteStatus: string
-  link: { token: string } | null
-}
 
 function statusLabel(status: string) {
   if (status === "CONFIRMADO") return "Confirmado"
@@ -74,14 +52,10 @@ export function GuestManager({
   const [createOpen, setCreateOpen] = useState(false)
   const [editing, setEditing] = useState<Guest | null>(null)
   const [deleting, setDeleting] = useState<Guest | null>(null)
-  const [createName, setCreateName] = useState("")
-  const [createPhone, setCreatePhone] = useState("")
-  const [editName, setEditName] = useState("")
-  const [editPhone, setEditPhone] = useState("")
   const [pending, setPending] = useState(false)
 
   async function submit(
-    action: (formData: FormData) => Promise<{ success?: string; error?: string }>,
+    action: GuestAction,
     formData: FormData,
     onSuccess: () => void,
   ) {
@@ -111,14 +85,7 @@ export function GuestManager({
             Cadastre pessoas e acompanhe as respostas do convite.
           </p>
         </div>
-        <Button
-          className="h-10"
-          onClick={() => {
-            setCreateName("")
-            setCreatePhone("")
-            setCreateOpen(true)
-          }}
-        >
+        <Button className="h-10" onClick={() => setCreateOpen(true)}>
           Novo convidado
         </Button>
       </div>
@@ -150,6 +117,7 @@ export function GuestManager({
                   const inviteMessage = [message.trim(), url]
                     .filter(Boolean)
                     .join("\n\n")
+
                   return (
                     <TableRow
                       key={guest.id}
@@ -200,11 +168,7 @@ export function GuestManager({
                             variant="outline"
                             size="sm"
                             className="h-10"
-                            onClick={() => {
-                              setEditing(guest)
-                              setEditName(guest.nome)
-                              setEditPhone(formatBrazilianMobile(guest.celular))
-                            }}
+                            onClick={() => setEditing(guest)}
                             disabled={pending}
                           >
                             Editar
@@ -229,190 +193,21 @@ export function GuestManager({
         </CardContent>
       </Card>
 
-      <Dialog
+      <CreateGuestDialog
         open={createOpen}
-        onOpenChange={(open) => {
-          setCreateOpen(open)
-          if (!open) {
-            setCreateName("")
-            setCreatePhone("")
-          }
-        }}
-      >
-        <DialogContent className="[&_[data-slot=input]]:h-10 [&_[data-slot=button]]:h-10 [&_[data-slot=button]]:min-h-10">
-          <DialogHeader>
-            <DialogTitle>Novo convidado</DialogTitle>
-            <DialogDescription>
-              Um link privado será criado automaticamente.
-            </DialogDescription>
-          </DialogHeader>
-          <form
-            action={(formData) =>
-              submit(createGuestAction, formData, () => {
-                setCreateName("")
-                setCreatePhone("")
-                setCreateOpen(false)
-              })
-            }
-            className="flex flex-col gap-5"
-          >
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="create-nome">Nome</FieldLabel>
-                <Input
-                  id="create-nome"
-                  name="nome"
-                  className="h-10"
-                  value={createName}
-                  onChange={(event) => setCreateName(event.target.value)}
-                  required
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="create-celular">Número celular</FieldLabel>
-                <Input
-                  id="create-celular"
-                  name="celular"
-                  className="h-10"
-                  type="tel"
-                  inputMode="numeric"
-                  autoComplete="tel"
-                  placeholder="(11) 99999-9999"
-                  value={createPhone}
-                  onChange={(event) =>
-                    setCreatePhone(formatBrazilianMobile(event.target.value))
-                  }
-                />
-              </Field>
-            </FieldGroup>
-            <DialogFooter className="border-t-0 bg-transparent">
-              <DialogClose
-                render={
-                  <Button
-                    variant="outline"
-                    className="h-10"
-                    onClick={() => setCreatePhone("")}
-                  />
-                }
-              >
-                Cancelar
-              </DialogClose>
-              <Button type="submit" className="h-10" disabled={pending}>
-                {pending ? (
-                  <Loader2 className="animate-spin" data-icon="inline-start" />
-                ) : null}
-                {pending ? "Salvando..." : "Cadastrar"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog
-        open={!!editing}
-        onOpenChange={(open) => {
-          if (!open) {
-            setEditing(null)
-            setEditName("")
-            setEditPhone("")
-          }
-        }}
-      >
-        <DialogContent className="[&_[data-slot=input]]:h-10 [&_[data-slot=button]]:h-10 [&_[data-slot=button]]:min-h-10">
-          <DialogHeader>
-            <DialogTitle>Editar convidado</DialogTitle>
-            <DialogDescription>Atualize os dados deste convidado.</DialogDescription>
-          </DialogHeader>
-          {editing ? (
-            <form
-              action={(formData) =>
-                submit(updateGuestAction, formData, () => {
-                  setEditName("")
-                  setEditPhone("")
-                  setEditing(null)
-                })
-              }
-              className="flex flex-col gap-5"
-            >
-              <input type="hidden" name="id" value={editing.id} />
-              <FieldGroup>
-                <Field>
-                  <FieldLabel htmlFor="edit-nome">Nome</FieldLabel>
-                  <Input
-                    id="edit-nome"
-                    name="nome"
-                    className="h-10"
-                    value={editName}
-                    onChange={(event) => setEditName(event.target.value)}
-                    required
-                  />
-                </Field>
-                <Field>
-                  <FieldLabel htmlFor="edit-celular">Número celular</FieldLabel>
-                  <Input
-                    id="edit-celular"
-                    name="celular"
-                    className="h-10"
-                    type="tel"
-                    inputMode="numeric"
-                    autoComplete="tel"
-                    placeholder="(11) 99999-9999"
-                    value={editPhone}
-                    onChange={(event) =>
-                      setEditPhone(formatBrazilianMobile(event.target.value))
-                    }
-                  />
-                </Field>
-              </FieldGroup>
-              <DialogFooter className="border-t-0 bg-transparent">
-                <DialogClose render={<Button variant="outline" className="h-10" />}>
-                  Cancelar
-                </DialogClose>
-                <Button type="submit" className="h-10" disabled={pending}>
-                  {pending ? (
-                    <Loader2 className="animate-spin" data-icon="inline-start" />
-                  ) : null}
-                  {pending ? "Salvando..." : "Salvar alterações"}
-                </Button>
-              </DialogFooter>
-            </form>
-          ) : null}
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={!!deleting} onOpenChange={(open) => !open && setDeleting(null)}>
-        <DialogContent className="[&_[data-slot=input]]:h-10 [&_[data-slot=button]]:h-10 [&_[data-slot=button]]:min-h-10">
-          <DialogHeader>
-            <DialogTitle>Excluir convidado?</DialogTitle>
-            <DialogDescription>
-              O convidado {deleting?.nome} e seu link serão removidos permanentemente.
-            </DialogDescription>
-          </DialogHeader>
-          <form
-            action={(formData) =>
-              submit(deleteGuestAction, formData, () => setDeleting(null))
-            }
-          >
-            <input type="hidden" name="id" value={deleting?.id ?? ""} />
-            <DialogFooter className="border-t-0 bg-transparent">
-              <DialogClose render={<Button variant="outline" className="h-10" />}>
-                Cancelar
-              </DialogClose>
-              <Button
-                type="submit"
-                variant="destructive"
-                className="h-10"
-                disabled={pending}
-              >
-                {pending ? (
-                  <Loader2 className="animate-spin" data-icon="inline-start" />
-                ) : null}
-                {pending ? "Excluindo..." : "Excluir convidado"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+        onOpenChange={setCreateOpen}
+        submit={submit}
+      />
+      <EditGuestDialog
+        guest={editing}
+        onOpenChange={() => setEditing(null)}
+        submit={submit}
+      />
+      <DeleteGuestDialog
+        guest={deleting}
+        onOpenChange={() => setDeleting(null)}
+        submit={submit}
+      />
     </>
   )
 }

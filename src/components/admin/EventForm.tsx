@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { format, parseISO } from "date-fns"
-import { CalendarDays, Loader2 } from "lucide-react"
+import { CalendarDays } from "lucide-react"
 import { ptBR } from "react-day-picker/locale"
 import { toast } from "sonner"
 import { updateEventAction } from "@/app/actions/event"
@@ -19,16 +19,15 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Textarea } from "@/components/ui/textarea"
+import { SaveEventButton } from "@/components/admin/SaveEventButton"
 
 export function EventForm({ date, message }: { date: string; message: string }) {
   const router = useRouter()
   const [eventDate, setEventDate] = useState(date)
   const [eventMessage, setEventMessage] = useState(message)
   const [calendarOpen, setCalendarOpen] = useState(false)
-  const [pending, setPending] = useState(false)
 
   async function submit(formData: FormData) {
-    setPending(true)
     try {
       const result = await updateEventAction(formData)
       if (result.error) {
@@ -39,8 +38,6 @@ export function EventForm({ date, message }: { date: string; message: string }) 
       router.refresh()
     } catch {
       toast.error("Não foi possível atualizar o evento.")
-    } finally {
-      setPending(false)
     }
   }
 
@@ -101,12 +98,7 @@ export function EventForm({ date, message }: { date: string; message: string }) 
               />
             </Field>
           </FieldGroup>
-          <Button type="submit" className="h-10" disabled={pending}>
-            {pending ? (
-              <Loader2 className="animate-spin" data-icon="inline-start" />
-            ) : null}
-            {pending ? "Salvando..." : "Salvar alterações"}
-          </Button>
+          <SaveEventButton />
         </form>
       </CardContent>
     </Card>
