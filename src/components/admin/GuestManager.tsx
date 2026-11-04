@@ -147,7 +147,9 @@ export function GuestManager({
               <TableBody>
                 {guests.map((guest) => {
                   const url = `${baseUrl}/?guest=${guest.link?.token ?? ""}`
-                  const inviteMessage = `${message}\n\n${url}`
+                  const inviteMessage = [message.trim(), url]
+                    .filter(Boolean)
+                    .join("\n\n")
                   return (
                     <TableRow
                       key={guest.id}
@@ -178,7 +180,7 @@ export function GuestManager({
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex flex-wrap items-center gap-2">
+                        <div className="flex flex-nowrap items-center gap-2">
                           <CopyInviteButton message={inviteMessage} />
                           <WhatsAppInviteButton
                             phone={guest.celular}
