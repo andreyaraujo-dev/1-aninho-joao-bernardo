@@ -30,26 +30,20 @@ export function WhatsAppInviteButton({
         ? phoneDigits
         : `55${phoneDigits}`
     const whatsappUrl = `https://wa.me/${internationalPhone}?text=${encodeURIComponent(message)}`
-    const whatsappWindow = window.open(whatsappUrl, "_blank", "noopener,noreferrer")
-    if (!whatsappWindow) {
-      toast.error(
-        "Não foi possível abrir o WhatsApp. Verifique o bloqueador de pop-ups.",
-      )
-      return
-    }
-
     setPending(true)
+    let whatsappWindow: Window | null = null
     try {
+      whatsappWindow = window.open(whatsappUrl, "_blank", "noopener,noreferrer")
       const result = await markSent()
       if (result.error) {
-        whatsappWindow.close()
+        whatsappWindow?.close()
         toast.error(result.error)
         return
       }
       if (!sent) toast.success(result.success ?? "Convite marcado como enviado.")
       router.refresh()
     } catch {
-      whatsappWindow.close()
+      whatsappWindow?.close()
       toast.error("Não foi possível registrar o envio do convite.")
     } finally {
       setPending(false)
