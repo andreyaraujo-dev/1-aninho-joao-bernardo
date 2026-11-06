@@ -20,6 +20,12 @@ enum InviteStatus {
   ENVIADO
 }
 
+enum GuestType {
+  ADULTO
+  IDOSO
+  CRIANCA
+}
+
 model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   nome      String
@@ -30,14 +36,18 @@ model User {
 }
 
 model Guest {
-  id            String       @id @default(auto()) @map("_id") @db.ObjectId
-  nome          String
-  celular       String
-  status        GuestStatus  @default(AGUARDANDO)
-  conviteStatus InviteStatus @default(NAO_ENVIADO)
-  createdAt     DateTime     @default(now())
-  confirmacao   DateTime?
-  link          GuestLink?
+  id              String       @id @default(auto()) @map("_id") @db.ObjectId
+  nome            String
+  celular         String
+  tipo            GuestType    @default(ADULTO)
+  status          GuestStatus  @default(AGUARDANDO)
+  conviteStatus   InviteStatus @default(NAO_ENVIADO)
+  isRepresentante Boolean      @default(false)
+  createdAt       DateTime     @default(now())
+  confirmacao     DateTime?
+  link            GuestLink?
+  familyId        String?      @db.ObjectId
+  family          Family?      @relation(fields: [familyId], references: [id])
 }
 
 model GuestLink {
@@ -46,6 +56,25 @@ model GuestLink {
   token     String   @unique
   createdAt DateTime @default(now())
   guest     Guest    @relation(fields: [guestId], references: [id])
+}
+
+model Family {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  nome          String
+  celular       String
+  conviteStatus InviteStatus @default(NAO_ENVIADO)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  members       Guest[]
+  link          FamilyLink?
+}
+
+model FamilyLink {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  familyId  String   @unique @db.ObjectId
+  token     String   @unique
+  createdAt DateTime @default(now())
+  family    Family   @relation(fields: [familyId], references: [id])
 }
 
 model Event {
