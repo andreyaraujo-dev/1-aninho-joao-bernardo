@@ -15,6 +15,13 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { formatBrazilianMobile } from "@/lib/validation"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { GuestSubmitButton } from "@/components/admin/GuestSubmitButton"
 import type { GuestAction } from "@/components/admin/GuestTypes"
 
@@ -81,8 +88,21 @@ export function CreateGuestDialog({
                 }
               />
             </Field>
+            <Field>
+              <FieldLabel>Tipo</FieldLabel>
+              <Select name="tipo" defaultValue="ADULTO">
+                <SelectTrigger size="lg" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ADULTO">Adulto</SelectItem>
+                  <SelectItem value="IDOSO">Idoso</SelectItem>
+                  <SelectItem value="CRIANCA">Criança</SelectItem>
+                </SelectContent>
+              </Select>
+            </Field>
           </FieldGroup>
-          <DialogFooter className="border-t-0 bg-transparent">
+          <DialogFooter>
             <DialogClose render={<Button variant="outline" className="h-10" />}>
               Cancelar
             </DialogClose>

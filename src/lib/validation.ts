@@ -73,29 +73,77 @@ const brazilianAreaCodes = new Set([
   "99",
 ])
 
+const brazilianMobileField = z
+  .string()
+  .trim()
+  .transform((value) => value.replace(/\D/g, ""))
+  .refine(
+    (value) =>
+      value === "" ||
+      (/^[1-9]\d9\d{8}$/.test(value) && brazilianAreaCodes.has(value.slice(0, 2))),
+    {
+      message: "Informe um celular brasileiro válido com DDD quando preenchido.",
+    },
+  )
+
 export const loginSchema = z.object({
   login: requiredText("Usuário"),
   senha: z.string().min(1, "Senha é obrigatória."),
 })
 
+export const guestTypeSchema = z.enum(["ADULTO", "IDOSO", "CRIANCA"]).default("ADULTO")
+
 export const guestSchema = z.object({
   nome: requiredText("Nome").max(120, "Nome deve ter no máximo 120 caracteres."),
-  celular: z
-    .string()
-    .trim()
-    .transform((value) => value.replace(/\D/g, ""))
-    .refine(
-      (value) =>
-        value === "" ||
-        (/^[1-9]\d9\d{8}$/.test(value) && brazilianAreaCodes.has(value.slice(0, 2))),
-      {
-        message: "Informe um celular brasileiro válido com DDD quando preenchido.",
-      },
-    ),
+  celular: brazilianMobileField,
+  tipo: guestTypeSchema,
 })
 
 export const guestIdSchema = z.object({
   id: requiredText("Convidado"),
+})
+
+export const familyMemberSchema = z.object({
+  nome: requiredText("Nome").max(120, "Nome deve ter no máximo 120 caracteres."),
+  tipo: guestTypeSchema,
+  celular: brazilianMobileField.optional().default(""),
+})
+
+export const familySchema = z.object({
+  nome: requiredText("Nome da família").max(
+    120,
+    "Nome deve ter no máximo 120 caracteres.",
+  ),
+  celular: brazilianMobileField,
+  members: z
+    .string()
+    .transform((v) => JSON.parse(v) as unknown)
+    .pipe(z.array(familyMemberSchema).min(1, "A família deve ter ao menos um membro.")),
+})
+
+export const familyIdSchema = z.object({
+  id: requiredText("Família"),
+})
+
+export const familyUpdateSchema = z.object({
+  id: requiredText("Família"),
+  nome: requiredText("Nome da família").max(
+    120,
+    "Nome deve ter no máximo 120 caracteres.",
+  ),
+  celular: brazilianMobileField,
+  members: z
+    .string()
+    .transform((v) => JSON.parse(v) as unknown)
+    .pipe(
+      z
+        .array(
+          familyMemberSchema.extend({
+            id: z.string().optional(),
+          }),
+        )
+        .min(1, "A família deve ter ao menos um membro."),
+    ),
 })
 
 export const eventSchema = z.object({
@@ -120,6 +168,36 @@ export const eventSchema = z.object({
 export const guestResponseSchema = z.object({
   token: requiredText("Link do convidado"),
   status: z.enum(["CONFIRMADO", "NAO_CONFIRMADO"]),
+})
+
+export const familyResponseSchema = z.object({
+  token: requiredText("Link da família"),
+  selectedIds: z
+    .string()
+    .transform((v) => JSON.parse(v) as unknown)
+    .pipe(z.array(z.string())),
+})
+
+export const adminGuestResponseSchema = z.object({
+  id: requiredText("Convidado"),
+  status: z.enum(["CONFIRMADO", "NAO_CONFIRMADO"]),
+})
+
+export const adminFamilyResponseSchema = z.object({
+  id: requiredText("Família"),
+  selectedIds: z
+    .string()
+    .transform((v) => JSON.parse(v) as unknown)
+    .pipe(z.array(z.string())),
+})
+
+export const promoteToIndividualSchema = z.object({
+  guestId: requiredText("Convidado"),
+})
+
+export const addToFamilySchema = z.object({
+  guestId: requiredText("Convidado"),
+  familyId: requiredText("Família"),
 })
 
 export function formDataToObject(formData: FormData) {
