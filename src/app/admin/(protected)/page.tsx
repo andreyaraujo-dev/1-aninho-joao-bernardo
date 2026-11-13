@@ -1,7 +1,6 @@
-import { Baby, Users, UserRoundCheck, UserRoundX, UserCheck } from "lucide-react"
 import { getEvent } from "@/lib/event"
 import { prisma } from "@/lib/prisma"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DashboardStats } from "@/components/admin/DashboardStats"
 
 export const dynamic = "force-dynamic"
 
@@ -15,6 +14,8 @@ export default async function AdminPage() {
     confirmedIdosos,
     confirmedCriancas,
     totalFamilies,
+    allGuests,
+    allFamilies,
   ] = await Promise.all([
     getEvent(),
     prisma.guest.count(),
@@ -24,19 +25,98 @@ export default async function AdminPage() {
     prisma.guest.count({ where: { status: "CONFIRMADO", tipo: "IDOSO" } }),
     prisma.guest.count({ where: { status: "CONFIRMADO", tipo: "CRIANCA" } }),
     prisma.family.count(),
+    prisma.guest.findMany({
+      select: {
+        id: true,
+        nome: true,
+        tipo: true,
+        status: true,
+        family: { select: { nome: true } },
+      },
+      orderBy: { nome: "asc" },
+    }),
+    prisma.family.findMany({
+      select: {
+        id: true,
+        nome: true,
+        conviteStatus: true,
+        members: {
+          select: { id: true, nome: true, tipo: true, status: true },
+          orderBy: [{ isRepresentante: "desc" }, { createdAt: "asc" }],
+        },
+      },
+      orderBy: { nome: "asc" },
+    }),
   ])
+
   const pending = total - confirmed - declined
+
+  const guests = allGuests.map((g) => ({
+    id: g.id,
+    nome: g.nome,
+    tipo: g.tipo,
+    status: g.status,
+    familyName: g.family?.nome ?? null,
+  }))
+
+  const families = allFamilies.map((f) => ({
+    id: f.id,
+    nome: f.nome,
+    conviteStatus: f.conviteStatus,
+    members: f.members,
+  }))
+
   const stats = [
-    { label: "Total de convidados", value: total, icon: Users },
-    { label: "Confirmados", value: confirmed, icon: UserRoundCheck },
-    { label: "Aguardando", value: pending, icon: Users },
-    { label: "Não confirmaram", value: declined, icon: UserRoundX },
+    {
+      label: "Total de convidados",
+      value: total,
+      icon: "users" as const,
+      category: "total" as const,
+    },
+    {
+      label: "Confirmados",
+      value: confirmed,
+      icon: "userRoundCheck" as const,
+      category: "confirmado" as const,
+    },
+    {
+      label: "Aguardando",
+      value: pending,
+      icon: "users" as const,
+      category: "aguardando" as const,
+    },
+    {
+      label: "Não confirmaram",
+      value: declined,
+      icon: "userRoundX" as const,
+      category: "naoConfirmado" as const,
+    },
   ]
   const typeStats = [
-    { label: "Adultos confirmados", value: confirmedAdults, icon: UserCheck },
-    { label: "Idosos confirmados", value: confirmedIdosos, icon: UserCheck },
-    { label: "Crianças confirmadas", value: confirmedCriancas, icon: Baby },
-    { label: "Famílias cadastradas", value: totalFamilies, icon: Users },
+    {
+      label: "Adultos confirmados",
+      value: confirmedAdults,
+      icon: "userCheck" as const,
+      category: "adultos" as const,
+    },
+    {
+      label: "Idosos confirmados",
+      value: confirmedIdosos,
+      icon: "userCheck" as const,
+      category: "idosos" as const,
+    },
+    {
+      label: "Crianças confirmadas",
+      value: confirmedCriancas,
+      icon: "baby" as const,
+      category: "criancas" as const,
+    },
+    {
+      label: "Famílias cadastradas",
+      value: totalFamilies,
+      icon: "users" as const,
+      category: "familias" as const,
+    },
   ]
 
   return (
@@ -52,55 +132,12 @@ export default async function AdminPage() {
           .
         </p>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map(({ label, value, icon: Icon }) => (
-          <Card
-            key={label}
-            className="border-primary/20 bg-card/95 shadow-lg shadow-primary/10 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/15"
-          >
-            <CardHeader className="flex-row items-center justify-between space-y-0">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {label}
-              </CardTitle>
-              <span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary">
-                <Icon className="size-4" />
-              </span>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-semibold tracking-tight text-foreground">
-                {value}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-      <div>
-        <h2 className="mb-4 text-lg font-semibold tracking-tight">
-          Confirmados por perfil
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {typeStats.map(({ label, value, icon: Icon }) => (
-            <Card
-              key={label}
-              className="border-primary/20 bg-card/95 shadow-lg shadow-primary/10 transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/15"
-            >
-              <CardHeader className="flex-row items-center justify-between space-y-0">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  {label}
-                </CardTitle>
-                <span className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary">
-                  <Icon className="size-4" />
-                </span>
-              </CardHeader>
-              <CardContent>
-                <p className="text-4xl font-semibold tracking-tight text-foreground">
-                  {value}
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
+      <DashboardStats
+        stats={stats}
+        typeStats={typeStats}
+        guests={guests}
+        families={families}
+      />
     </div>
   )
 }

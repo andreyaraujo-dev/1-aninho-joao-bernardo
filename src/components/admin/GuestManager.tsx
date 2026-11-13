@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { ChevronDown, ChevronRight } from "lucide-react"
 import { toast } from "sonner"
 import {
   adminRespondGuestAction,
@@ -55,18 +56,6 @@ function tipoClassName(tipo: string) {
   return "border-slate-200 bg-slate-100 text-slate-700"
 }
 
-function familyMembersSummary(family: Family) {
-  const counts: Record<string, number> = { ADULTO: 0, IDOSO: 0, CRIANCA: 0 }
-  for (const m of family.members) counts[m.tipo] = (counts[m.tipo] ?? 0) + 1
-  const parts = []
-  if (counts.ADULTO)
-    parts.push(`${counts.ADULTO} adulto${counts.ADULTO > 1 ? "s" : ""}`)
-  if (counts.IDOSO) parts.push(`${counts.IDOSO} idoso${counts.IDOSO > 1 ? "s" : ""}`)
-  if (counts.CRIANCA)
-    parts.push(`${counts.CRIANCA} criança${counts.CRIANCA > 1 ? "s" : ""}`)
-  return parts.join(", ") || "sem membros"
-}
-
 function familyStatus(family: Family): string {
   const statuses = family.members.map((m) => m.status)
   if (statuses.every((s) => s === "AGUARDANDO")) return "AGUARDANDO"
@@ -96,7 +85,17 @@ export function GuestManager({
   const [deletingGuest, setDeletingGuest] = useState<Guest | null>(null)
   const [deletingFamily, setDeletingFamily] = useState<Family | null>(null)
   const [confirmingFamily, setConfirmingFamily] = useState<Family | null>(null)
+  const [expandedFamilies, setExpandedFamilies] = useState<Set<string>>(new Set())
   const [pending, setPending] = useState(false)
+
+  function toggleFamily(id: string) {
+    setExpandedFamilies((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   async function submit(
     action: GuestAction,
@@ -124,14 +123,14 @@ export function GuestManager({
 
   return (
     <>
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Convidados</h1>
           <p className="mt-2 text-muted-foreground">
             Cadastre pessoas e famílias e acompanhe as respostas do convite.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex shrink-0 gap-2">
           <Button
             variant="outline"
             className="h-10"
@@ -312,8 +311,7 @@ export function GuestManager({
               <Table>
                 <TableHeader>
                   <TableRow className="border-b-gray-300">
-                    <TableHead>Família</TableHead>
-                    <TableHead>Membros</TableHead>
+                    <TableHead>Família / Membro</TableHead>
                     <TableHead>Celular</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Convite</TableHead>
@@ -321,22 +319,29 @@ export function GuestManager({
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
-                  {families.map((family) => {
-                    const url = `${baseUrl}/?guest=${family.link?.token ?? ""}`
-                    const inviteMessage = [message.trim(), url]
-                      .filter(Boolean)
-                      .join("\n\n")
-                    const status = familyStatus(family)
+                {families.map((family) => {
+                  const url = `${baseUrl}/?guest=${family.link?.token ?? ""}`
+                  const inviteMessage = [message.trim(), url]
+                    .filter(Boolean)
+                    .join("\n\n")
+                  const status = familyStatus(family)
+                  const isExpanded = expandedFamilies.has(family.id)
 
-                    return (
+                  return (
+                    <TableBody key={family.id}>
                       <TableRow
-                        key={family.id}
-                        className="border-b-gray-300 transition-colors hover:bg-accent/50"
+                        className="border-b-gray-300 cursor-pointer transition-colors hover:bg-accent/50"
+                        onClick={() => toggleFamily(family.id)}
                       >
-                        <TableCell className="font-medium">{family.nome}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {familyMembersSummary(family)}
+                        <TableCell className="font-medium">
+                          <span className="flex items-center gap-2">
+                            {isExpanded ? (
+                              <ChevronDown className="size-4 shrink-0 text-muted-foreground" />
+                            ) : (
+                              <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+                            )}
+                            {family.nome}
+                          </span>
                         </TableCell>
                         <TableCell>{formatBrazilianMobile(family.celular)}</TableCell>
                         <TableCell>
@@ -358,7 +363,7 @@ export function GuestManager({
                               : "Não enviado"}
                           </Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
                           <div className="flex flex-nowrap items-center gap-2">
                             <CopyInviteButton message={inviteMessage} />
                             <WhatsAppInviteButton
@@ -373,7 +378,7 @@ export function GuestManager({
                             />
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell onClick={(e) => e.stopPropagation()}>
                           <div className="flex items-center justify-end gap-2">
                             {status === "AGUARDANDO" && (
                               <Button
@@ -407,9 +412,46 @@ export function GuestManager({
                           </div>
                         </TableCell>
                       </TableRow>
-                    )
-                  })}
-                </TableBody>
+                      {isExpanded &&
+                        family.members.map((member) => (
+                          <TableRow
+                            key={member.id}
+                            className="bg-muted/30 hover:bg-muted/50"
+                          >
+                            <TableCell className="pl-8 text-sm text-muted-foreground">
+                              <span className="mr-2 text-border">└</span>
+                              {member.nome}
+                              {member.isRepresentante && (
+                                <span className="ml-2 text-xs text-muted-foreground/60">
+                                  (representante)
+                                </span>
+                              )}
+                            </TableCell>
+                            <TableCell />
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Badge
+                                  variant="outline"
+                                  className={tipoClassName(member.tipo)}
+                                >
+                                  {tipoLabel(member.tipo)}
+                                </Badge>
+                                <Badge
+                                  variant="outline"
+                                  className={statusClassName(member.status)}
+                                >
+                                  {statusLabel(member.status)}
+                                </Badge>
+                              </div>
+                            </TableCell>
+                            <TableCell />
+                            <TableCell />
+                            <TableCell />
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  )
+                })}
               </Table>
             )}
           </CardContent>
